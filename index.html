@@ -4230,6 +4230,55 @@
             });
         }
 
+        // ===== DEMO MODE FUNCTION =====
+function activateDemoMode() {
+    const demoMode = true;
+    if (!demoMode) return;
+
+    // 1️⃣ Disable Export / Print / Save buttons
+    const actionButtons = document.querySelectorAll('#actions button');
+    actionButtons.forEach(btn => {
+        btn.disabled = true;
+        btn.style.opacity = '0.5';
+        btn.style.cursor = 'not-allowed';
+        btn.title = 'Available in Full Version';
+        btn.onclick = () => alert('This feature is available in the Full Version!');
+    });
+
+    // 2️⃣ Lock Multi-Subject Planner inputs/buttons
+    const multiPlanner = document.querySelectorAll('#multiSubjectPlanner input, #multiSubjectPlanner button, #multiSubjectPlanner select');
+    multiPlanner.forEach(el => {
+        el.disabled = true;
+        el.style.opacity = '0.5';
+        el.style.cursor = 'not-allowed';
+        el.onclick = () => alert('This feature is available in the Full Version!');
+    });
+
+    // 3️⃣ Lock extra subjects in Subject-Focused Planner
+    const extraSubjects = document.querySelectorAll('#subjectPlanner .subject');
+    extraSubjects.forEach((subj, idx) => {
+        if (idx > 0) {
+            const inputs = subj.querySelectorAll('input, button, select');
+            inputs.forEach(el => {
+                el.disabled = true;
+                el.style.opacity = '0.5';
+                el.style.cursor = 'not-allowed';
+                el.onclick = () => alert('This feature is available in the Full Version!');
+            });
+        }
+    });
+
+    // 4️⃣ Limit Selectors (Country, Grade, Calendar)
+    const dropdowns = document.querySelectorAll('#selectors select');
+    dropdowns.forEach(drop => {
+        Array.from(drop.options).forEach((opt, idx) => {
+            if (idx > 0) opt.disabled = true;
+        });
+    });
+
+    console.log('Demo Mode Active: Premium features disabled.');
+}
+
         // Initialize the app
         document.addEventListener('DOMContentLoaded', function() {
             // Set default date for lesson form to today
@@ -4288,6 +4337,10 @@
                 updateHeaderInfo();
                 updateSubjectTitle();
             }, 100);
+
+            // ===== Activate Demo Mode =====
+            activateDemoMode();
+
         });
 
         // Close modals when clicking outside
