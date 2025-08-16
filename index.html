@@ -4339,7 +4339,9 @@ function activateDemoMode() {
             }, 100);
 
             // ===== Activate Demo Mode =====
-            activateDemoMode();
+            setTimeout(() => {
+                activateDemoMode();
+            }, 500); // 500ms delay to ensure all elements are rendered
 
         });
 
