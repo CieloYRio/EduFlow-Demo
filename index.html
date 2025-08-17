@@ -4273,46 +4273,78 @@ function activateDemoMode() {
     if (!demoMode) return;
 
     // 1️⃣ Disable Export / Print / Save buttons
-    const actionButtons = document.querySelectorAll('#actions button');
-    actionButtons.forEach(btn => {
-        btn.disabled = true;
-        btn.style.opacity = '0.5';
-        btn.style.cursor = 'not-allowed';
-        btn.title = 'Available in Full Version';
-        btn.onclick = () => alert('Feature Locked: This feature is available in the Full Version! Get access to unlock all features.');
-    });
+const actionButtons = document.querySelectorAll('div h3 + div button'); 
+// selects all buttons inside the div immediately after the <h3> for export/save
+actionButtons.forEach(btn => {
+    btn.disabled = true;
+    btn.style.opacity = '0.5';
+    btn.style.cursor = 'not-allowed';
+    btn.title = 'Available in Full Version';
+    btn.onclick = () => alert('Feature Locked: This feature is available in the Full Version! Get access to unlock all features.');
+});
 
-    // 2️⃣ Lock Multi-Subject Planner inputs/buttons
-    const multiPlanner = document.querySelectorAll('#multiSubjectPlanner input, #multiSubjectPlanner button, #multiSubjectPlanner select');
-    multiPlanner.forEach(el => {
+    // 2️⃣ Lock all inputs in Multi-Subject / Period-Wise Planner
+const multiPlanner = document.querySelectorAll('#period-wise input, #period-wise select, #period-wise button, #period-wise textarea');
+multiPlanner.forEach(el => {
+    el.disabled = true;
+    el.style.opacity = '0.5';
+    el.style.cursor = 'not-allowed';
+    el.onclick = (e) => {
+        e.preventDefault(); // Prevent default action
+        alert('Feature Locked: This feature is available in the Full Version! Get access to unlock all features.');
+    };
+});
+
+   // 3️⃣ Lock all inputs in Subject-Focused Planner
+const subjectPlanner = document.querySelectorAll('#subject-wise input, #subject-wise textarea, #subject-wise select, #subject-wise button');
+subjectPlanner.forEach(el => {
+    el.disabled = true;
+    el.style.opacity = '0.5';
+    el.style.cursor = 'not-allowed';
+    el.onclick = (e) => {
+        e.preventDefault(); // Prevent any default action
+        alert('Feature Locked: This feature is available in the Full Version! Get access to unlock all features.');
+    };
+});
+
+    // 4️⃣ Lock Global Settings (Country, Grade, Calendar, Language)
+const globalSelectors = [
+    'globalCountryRegion',
+    'globalCalendarSystem',
+    'globalSchoolYearStart',
+    'globalAcademicYear',
+    'globalGradeLevel',
+    'globalInterfaceLanguage'
+];
+
+globalSelectors.forEach(id => {
+    const el = document.getElementById(id);
+    if (el) {
         el.disabled = true;
         el.style.opacity = '0.5';
         el.style.cursor = 'not-allowed';
-        el.onclick = () => alert('Feature Locked: This feature is available in the Full Version! Get access to unlock all features.');
-    });
-
-    // 3️⃣ Lock extra subjects in Subject-Focused Planner
-    const extraSubjects = document.querySelectorAll('#subjectPlanner .subject');
-    extraSubjects.forEach((subj, idx) => {
-        if (idx > 0) {
-            const inputs = subj.querySelectorAll('input, button, select');
-            inputs.forEach(el => {
-                el.disabled = true;
-                el.style.opacity = '0.5';
-                el.style.cursor = 'not-allowed';
-                el.onclick = () => alert('Feature Locked: This feature is available in the Full Version! Get access to unlock all features.');
-            });
-        }
-    });
-
-    // 4️⃣ Limit Selectors (Country, Grade, Calendar)
-    const dropdowns = document.querySelectorAll('#selectors select');
-    dropdowns.forEach(drop => {
-        Array.from(drop.options).forEach((opt, idx) => {
-            if (idx > 0) opt.disabled = true;
+        // Show demo pop-up on click or change
+        el.addEventListener('click', () => {
+            alert("Feature Locked! This option is only available in the Full Version.");
         });
-    });
+        el.addEventListener('change', () => {
+            alert("Feature Locked! This option is only available in the Full Version.");
+        });
+    }
+});
 
+    // 5️⃣ Lock all inputs in Daily Schedule / Time Slot Planner
+const dailySchedule = document.querySelectorAll('#schedule input, #schedule select, #schedule button, #schedule textarea');
+dailySchedule.forEach(el => {
+    el.disabled = true;
+    el.style.opacity = '0.5';
+    el.style.cursor = 'not-allowed';
+    el.onclick = (e) => {
+        e.preventDefault(); // Prevent default action
+        alert('Feature Locked: This feature is available in the Full Version! Get access to unlock all features.');
+    };
+});
+    
     console.log('Demo Mode Active: Premium features disabled.');
 }
 
