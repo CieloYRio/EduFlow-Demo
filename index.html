@@ -531,6 +531,43 @@
     </style>
 </head>
 <body>
+    <!-- ===== DEMO VERSION BANNER ===== -->
+<div class="demo-banner" style="background-color: #fffae6; color: #333; text-align: center; padding: 10px; font-weight: bold; border-bottom: 2px solid #f5d36d;">
+    DEMO VERSION - Get the full template with all features unlocked!
+</div>
+
+<!-- ===== FEATURE LOCKED POP-UP ===== -->
+<div id="featureLockedModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); z-index: 9999; justify-content: center; align-items: center;">
+    <div style="background: #fff; padding: 20px; border-radius: 10px; max-width: 400px; width: 90%; text-align: center;">
+        <p style="font-size: 16px; font-weight: bold;">Feature Locked</p>
+        <p>This feature is available in the full version. Get access now!</p>
+        <button onclick="window.open('https://yourpaymentlink.com', '_blank')" style="margin-top: 10px; padding: 10px 20px; background-color: #f5d36d; border: none; border-radius: 5px; cursor: pointer;">
+            Get Full Version
+        </button>
+        <br><br>
+        <button onclick="document.getElementById('featureLockedModal').style.display='none'" style="padding: 5px 10px; background-color: #ccc; border: none; border-radius: 5px; cursor: pointer;">
+            Close
+        </button>
+    </div>
+</div>
+
+<script>
+    // Function to show the feature locked pop-up
+    function showFeatureLocked() {
+        const modal = document.getElementById('featureLockedModal');
+        modal.style.display = 'flex';
+    }
+
+    // Add click listeners to all locked features
+    const lockedElements = document.querySelectorAll('.locked-feature');
+    lockedElements.forEach(el => {
+        el.addEventListener('click', function(e) {
+            e.preventDefault();
+            showFeatureLocked();
+        });
+    });
+</script>
+
     <div class="container">
         <div class="header">
             <h1>📖 EduFlow Planner</h1>
@@ -4202,148 +4239,141 @@
             updateHeaderInfo();
         }
 
-        // Add event listeners for header updates
-        function addHeaderUpdateListeners() {
-            const fieldsToWatch = ['learnerName', 'teacherName', 'globalGradeLevel', 'globalAcademicYear', 'globalSchoolYearStart'];
-            fieldsToWatch.forEach(fieldId => {
-                const field = document.getElementById(fieldId);
-                if (field) {
-                    // Clean approach - only add specific listeners for name fields
-                    if (fieldId === 'learnerName' || fieldId === 'teacherName') {
-                        field.addEventListener('input', function(e) {
-                            updateHeaderInfo();
-                        });
-                        field.addEventListener('keyup', function(e) {
-                            updateHeaderInfo();
-                        });
-                    } else {
-                        field.addEventListener('change', function(e) {
-                            updateHeaderInfo();
-                            triggerAutoSave();
-                        });
-                    }
-                    
-                    if (fieldId === 'globalSchoolYearStart') {
-                        field.addEventListener('change', updateAcademicYearFromStart);
-                    }
+<script>
+    // Add event listeners for header updates
+    function addHeaderUpdateListeners() {
+        const fieldsToWatch = ['learnerName', 'teacherName', 'globalGradeLevel', 'globalAcademicYear', 'globalSchoolYearStart'];
+        fieldsToWatch.forEach(fieldId => {
+            const field = document.getElementById(fieldId);
+            if (field) {
+                if (fieldId === 'learnerName' || fieldId === 'teacherName') {
+                    field.addEventListener('input', updateHeaderInfo);
+                    field.addEventListener('keyup', updateHeaderInfo);
+                } else {
+                    field.addEventListener('change', function() {
+                        updateHeaderInfo();
+                        triggerAutoSave();
+                    });
                 }
-            });
-        }
 
-        // ===== DEMO MODE FUNCTION =====
-function activateDemoMode() {
-    const demoMode = true;
-    if (!demoMode) return;
-
-    // 1️⃣ Disable Export / Print / Save buttons
-    const actionButtons = document.querySelectorAll('#actions button');
-    actionButtons.forEach(btn => {
-        btn.disabled = true;
-        btn.style.opacity = '0.5';
-        btn.style.cursor = 'not-allowed';
-        btn.title = 'Available in Full Version';
-        btn.onclick = () => alert('This feature is available in the Full Version!');
-    });
-
-    // 2️⃣ Lock Multi-Subject Planner inputs/buttons
-    const multiPlanner = document.querySelectorAll('#multiSubjectPlanner input, #multiSubjectPlanner button, #multiSubjectPlanner select');
-    multiPlanner.forEach(el => {
-        el.disabled = true;
-        el.style.opacity = '0.5';
-        el.style.cursor = 'not-allowed';
-        el.onclick = () => alert('This feature is available in the Full Version!');
-    });
-
-    // 3️⃣ Lock extra subjects in Subject-Focused Planner
-    const extraSubjects = document.querySelectorAll('#subjectPlanner .subject');
-    extraSubjects.forEach((subj, idx) => {
-        if (idx > 0) {
-            const inputs = subj.querySelectorAll('input, button, select');
-            inputs.forEach(el => {
-                el.disabled = true;
-                el.style.opacity = '0.5';
-                el.style.cursor = 'not-allowed';
-                el.onclick = () => alert('This feature is available in the Full Version!');
-            });
-        }
-    });
-
-    // 4️⃣ Limit Selectors (Country, Grade, Calendar)
-    const dropdowns = document.querySelectorAll('#selectors select');
-    dropdowns.forEach(drop => {
-        Array.from(drop.options).forEach((opt, idx) => {
-            if (idx > 0) opt.disabled = true;
-        });
-    });
-
-    console.log('Demo Mode Active: Premium features disabled.');
-}
-
-        // Initialize the app
-        document.addEventListener('DOMContentLoaded', function() {
-            // Set default date for lesson form to today
-            const today = new Date().toISOString().split('T')[0];
-            document.getElementById('lessonDate').value = today;
-            document.getElementById('scheduleDate').value = today;
-            
-            // Set default school year start to current September in global settings
-            const currentYear = new Date().getFullYear();
-            const currentMonth = new Date().getMonth();
-            const schoolYear = currentMonth >= 8 ? currentYear : currentYear - 1; // September = month 8
-            document.getElementById('globalSchoolYearStart').value = `${schoolYear}-09`;
-            
-            // Initialize global settings
-            updateGlobalCountrySettings();
-            updateGlobalCalendarSystem();
-            
-            // Try to load auto-saved data first, then fall back to template
-            const autoSaveLoaded = loadAutoSavedData();
-            
-            if (!autoSaveLoaded) {
-                // Load saved template if exists and no auto-save data
-                const savedTemplate = localStorage.getItem('eduflow_template');
-                if (savedTemplate) {
-                    try {
-                        const data = JSON.parse(savedTemplate);
-                        if (data.learnerName) document.getElementById('learnerName').value = data.learnerName;
-                        if (data.teacherName) document.getElementById('teacherName').value = data.teacherName;
-                        if (data.planningData) {
-                            if (data.planningData.learningGoals) document.getElementById('learningGoals').value = data.planningData.learningGoals;
-                            if (data.planningData.prerequisites) document.getElementById('prerequisites').value = data.planningData.prerequisites;
-                            if (data.planningData.teachingNotes) document.getElementById('teachingNotes').value = data.planningData.teachingNotes;
-                            if (data.planningData.mappingInsights) document.getElementById('mappingInsights').value = data.planningData.mappingInsights;
-                        }
-                    } catch (e) {
-                        console.log('Could not load saved template');
-                    }
+                if (fieldId === 'globalSchoolYearStart') {
+                    field.addEventListener('change', updateAcademicYearFromStart);
                 }
             }
-            
-            // Initialize all interconnected data
-            updateAllSections();
-            addHeaderUpdateListeners();
-            
-            // Setup auto-save functionality
-            setupAutoSaveListeners();
-            createSaveIndicator();
-            
-            // Update header info after data is loaded
-            setTimeout(() => {
-                updateHeaderInfo();
-                updateSubjectTitle();
-            }, 100);
-            // ===== Activate Demo Mode =====
-            setTimeout(() => {
-            activateDemoMode();
-            }, 500); // small delay ensures all elements are rendered
+        });
+    }
+
+    // ===== DEMO MODE FUNCTION =====
+    function activateDemoMode() {
+        const demoMode = true;
+        if (!demoMode) return;
+
+        // 1️⃣ Disable Export / Print / Save buttons
+        const actionButtons = document.querySelectorAll('#actions button');
+        actionButtons.forEach(btn => {
+            btn.disabled = true;
+            btn.style.opacity = '0.5';
+            btn.style.cursor = 'not-allowed';
+            btn.title = 'Available in Full Version';
+            btn.onclick = () => alert('This feature is available in the Full Version!');
         });
 
-        // Close modals when clicking outside
-        document.addEventListener('click', function(event) {
-            if (event.target.classList.contains('modal')) {
-                event.target.classList.remove('active');
+        // 2️⃣ Lock Multi-Subject Planner inputs/buttons
+        const multiPlanner = document.querySelectorAll('#multiSubjectPlanner input, #multiSubjectPlanner button, #multiSubjectPlanner select');
+        multiPlanner.forEach(el => {
+            el.disabled = true;
+            el.style.opacity = '0.5';
+            el.style.cursor = 'not-allowed';
+            el.onclick = () => alert('This feature is available in the Full Version!');
+        });
+
+        // 3️⃣ Lock extra subjects in Subject-Focused Planner
+        const extraSubjects = document.querySelectorAll('#subjectPlanner .subject');
+        extraSubjects.forEach((subj, idx) => {
+            if (idx > 0) {
+                const inputs = subj.querySelectorAll('input, button, select');
+                inputs.forEach(el => {
+                    el.disabled = true;
+                    el.style.opacity = '0.5';
+                    el.style.cursor = 'not-allowed';
+                    el.onclick = () => alert('This feature is available in the Full Version!');
+                });
             }
         });
-    </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'96fb475ed348ee5f',t:'MTc1NTI4ODAzMy4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+
+        // 4️⃣ Limit Selectors (Country, Grade, Calendar)
+        const dropdowns = document.querySelectorAll('#selectors select');
+        dropdowns.forEach(drop => {
+            Array.from(drop.options).forEach((opt, idx) => {
+                if (idx > 0) opt.disabled = true;
+            });
+        });
+
+        console.log('Demo Mode Active: Premium features disabled.');
+    }
+
+    // ===== Initialize the app =====
+    document.addEventListener('DOMContentLoaded', function() {
+        // Set default date for lesson form to today
+        const today = new Date().toISOString().split('T')[0];
+        document.getElementById('lessonDate').value = today;
+        document.getElementById('scheduleDate').value = today;
+
+        // Set default school year start to current September in global settings
+        const currentYear = new Date().getFullYear();
+        const currentMonth = new Date().getMonth();
+        const schoolYear = currentMonth >= 8 ? currentYear : currentYear - 1;
+        document.getElementById('globalSchoolYearStart').value = `${schoolYear}-09`;
+
+        // Initialize global settings
+        updateGlobalCountrySettings();
+        updateGlobalCalendarSystem();
+
+        // Try to load auto-saved data first, then fall back to template
+        const autoSaveLoaded = loadAutoSavedData();
+        if (!autoSaveLoaded) {
+            const savedTemplate = localStorage.getItem('eduflow_template');
+            if (savedTemplate) {
+                try {
+                    const data = JSON.parse(savedTemplate);
+                    if (data.learnerName) document.getElementById('learnerName').value = data.learnerName;
+                    if (data.teacherName) document.getElementById('teacherName').value = data.teacherName;
+                    if (data.planningData) {
+                        if (data.planningData.learningGoals) document.getElementById('learningGoals').value = data.planningData.learningGoals;
+                        if (data.planningData.prerequisites) document.getElementById('prerequisites').value = data.planningData.prerequisites;
+                        if (data.planningData.teachingNotes) document.getElementById('teachingNotes').value = data.planningData.teachingNotes;
+                        if (data.planningData.mappingInsights) document.getElementById('mappingInsights').value = data.planningData.mappingInsights;
+                    }
+                } catch (e) {
+                    console.log('Could not load saved template');
+                }
+            }
+        }
+
+        // Initialize all interconnected data
+        updateAllSections();
+        addHeaderUpdateListeners();
+
+        // Setup auto-save functionality
+        setupAutoSaveListeners();
+        createSaveIndicator();
+
+        // Update header info after data is loaded
+        setTimeout(() => {
+            updateHeaderInfo();
+            updateSubjectTitle();
+        }, 100);
+
+        // ===== Activate Demo Mode =====
+        setTimeout(() => activateDemoMode(), 500);
+    });
+
+    // Close modals when clicking outside
+    document.addEventListener('click', function(event) {
+        if (event.target.classList.contains('modal')) {
+            event.target.classList.remove('active');
+        }
+    });
+</script>
+</body>
 </html>
